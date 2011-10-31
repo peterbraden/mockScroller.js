@@ -32,9 +32,9 @@ exports.mockScroller = function($elem, height){
         marginRight = body.style.marginRight
 
         docScrollTop = doc.scrollTop;
-        body.style.marginRight = ($(doc).width() - initialWidth) + 'px';          
         doc.style.overflow = 'hidden';
         body.scroll = "no";
+        body.style.marginRight = ($(doc).width() - initialWidth) + 'px';          
         // Setting it to 'hidden' resets scrollTop in FF/IE
         doc.scrollTop = docScrollTop;
       }
