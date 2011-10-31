@@ -1,7 +1,7 @@
 exports = (function(){return this;})();
 
 
-(function($, _, JSON, undefined){
+(function($, _, undefined){
 /*  
   
   Make a fake scrollbar. 
@@ -96,5 +96,5 @@ exports.mockScroller = function($elem, height){
   return scroller;  
 }
 
-})($, _, JSON)
+})($, _)
 
