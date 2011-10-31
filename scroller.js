@@ -13,31 +13,6 @@ exports = (function(){return this;})();
 
 */
 
-var doc = document.documentElement
-  , body = document.body
-  , marginRight
-
-var disableWindowScroll = function(){
-
-  var initialWidth = $(doc).width()
-  marginRight = body.style.marginRight
-    
-  docScrollTop = doc.scrollTop;
-  doc.style.overflow = 'hidden';
-  body.scroll = "no";
-  body.style.marginRight = ($(doc).width() - initialWidth) + 'px';          
-  // Setting it to 'hidden' resets scrollTop in FF/IE
-  doc.scrollTop = docScrollTop;
-}
-
-var enableWindowScroll = function(){
-  // unlock window scroll
-  doc.style.overflow = 'auto';
-  body.scroll = "";
-  body.style.marginRight = marginRight || 'auto';
-  doc.scrollTop = docScrollTop;
-}
-
 exports.mockScroller = function($elem, height){
   
   $elem = $($elem)
@@ -49,6 +24,27 @@ exports.mockScroller = function($elem, height){
     , $scroller = $viewport.find('.yj-scroller').css('height', height)
     , $scrollbar = $("<div class='yj-mockscroll' />").appendTo($viewport)
     , docScrollTop = -1
+    , doc = document.documentElement
+    , body = document.body
+    , marginRight
+    , disableWindowScroll = function(){
+        var initialWidth = $(doc).width()
+        marginRight = body.style.marginRight
+
+        docScrollTop = doc.scrollTop;
+        body.style.marginRight = ($(doc).width() - initialWidth) + 'px';          
+        doc.style.overflow = 'hidden';
+        body.scroll = "no";
+        // Setting it to 'hidden' resets scrollTop in FF/IE
+        doc.scrollTop = docScrollTop;
+      }
+     , enableWindowScroll = function(){
+        // unlock window scroll
+        doc.style.overflow = 'auto';
+        body.scroll = "";
+        body.style.marginRight = marginRight || 'auto';
+        doc.scrollTop = docScrollTop;
+      }
     , scroller = {
       
         hide: _.bind($scrollbar.fadeOut, $scrollbar, 'slow')
@@ -89,8 +85,9 @@ exports.mockScroller = function($elem, height){
    , domchange : scroller.calculate
   })
   
-  $scroller.children().each(function(){
-    this.onselectstart="return false;"
+  $scroller.find('*').live('select',function(e){
+    e.preventDefault()
+    return false;
   })
   
   return scroller;  

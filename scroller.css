@@ -3,19 +3,24 @@
   overflow:hidden;
 	position:relative;
 
+
+
+}
+
+.yj-scroller-viewport *{
 	-webkit-user-select: none;
 	-khtml-user-select: none;
 	-moz-user-select: none;
 	-o-user-select: none;
 	user-select: none;
-
-
+	
 }
 
 .yj-scroller { /* Wide inner container to hide scrollbar */
   width:200%;
   overflow-x:hidden;
   overflow-y:scroll;
+	-webkit-overflow-scrolling: touch;
 }
 
 
