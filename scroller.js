@@ -1,3 +1,5 @@
+exports = (function(){return this;})();
+
 
 (function($, _, JSON, undefined){
 /*  
@@ -10,7 +12,6 @@
 
 
 */
-var exports = exports || window;
 
 var disableWindowScroll = function(){
   var doc = document.documentElement
