@@ -13,10 +13,14 @@ exports = (function(){return this;})();
 
 */
 
+var doc = document.documentElement
+  , body = document.body
+  , marginRight
+
 var disableWindowScroll = function(){
-  var doc = document.documentElement
-    , body = document.body
-    , initialWidth = $(doc).width()
+
+  var initialWidth = $(doc).width()
+  marginRight = body.style.marginRight
     
   docScrollTop = doc.scrollTop;
   doc.style.overflow = 'hidden';
@@ -27,13 +31,10 @@ var disableWindowScroll = function(){
 }
 
 var enableWindowScroll = function(){
-  var doc = document.documentElement
-    , body = document.body
-    
   // unlock window scroll
   doc.style.overflow = 'auto';
   body.scroll = "";
-  body.style.marginRight = 'auto';
+  body.style.marginRight = marginRight || 'auto';
   doc.scrollTop = docScrollTop;
 }
 
@@ -86,6 +87,10 @@ exports.mockScroller = function($elem, height){
    , mouseover: scroller.mouseover
    , mouseout: scroller.mouseout
    , domchange : scroller.calculate
+  })
+  
+  $scroller.children().each(function(){
+    this.onselectstart="return false;"
   })
   
   return scroller;  
