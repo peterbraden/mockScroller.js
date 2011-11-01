@@ -69,8 +69,7 @@ exports.mockScroller = function($elem, height, padding){
         
          var hiddenHeight = Math.max($elem.height() - $viewport.height(), 1)
             , scrollbarheight = Math.max((1/(hiddenHeight+100) * 100) * $viewport.height(), 10)
-            , bartop = $scrollbar.position().top + ydiff
-            , top =  hiddenHeight * ((bartop-padding)/($viewport.height() - scrollbarheight - 2*padding))
+            , top =  hiddenHeight * ((ydiff-padding)/($viewport.height() - scrollbarheight - 2*padding))
         
         $scroller.scrollTop(top)        
         scroller.calculate() // Move bar
@@ -116,8 +115,7 @@ exports.mockScroller = function($elem, height, padding){
         if (scroller.dragBar == null)
           return;
         
-        scroller.uncalculate(e.clientY - scroller.dragBar)  
-        scroller.dragBar = e.clientY
+        scroller.uncalculate(e.clientY - $viewport.offset().top)  
       }
       
       /**
