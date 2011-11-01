@@ -101,6 +101,8 @@ exports.mockScroller = function($elem, height, padding){
             'mouseup.yj-scroller': scroller.scrollbarMouseup
           , 'mousemove.yj-scroller': scroller.barScroll 
           , 'selectstart.yj-scroller': function(e){e.preventDefault()} 
+          , 'touchend.yj-scroller': scroller.scrollbarMouseup
+          , 'touchmove.yj-scroller': scroller.barScroll
         })
         
       }
@@ -143,12 +145,14 @@ exports.mockScroller = function($elem, height, padding){
    , mouseout: scroller.mouseout
    , domchange : scroller.calculate
    , mousedown : scroller.preventSideScroll
+   , touchmove : scroller.calculate // iOs
   })
   
   $scrollbar.bind({
      mouseover: scroller.mouseover
    , mouseout: scroller.mouseout
    , mousedown: scroller.scrollbarMousedown
+   , touchstart: scroller.scrollbarMousedown
   })
   
   return scroller;  
