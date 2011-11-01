@@ -60,7 +60,7 @@ exports.mockScroller = function($elem, height, padding){
             top : ($scroller.scrollTop() / hiddenHeight) * ($viewport.height() - scrollbarheight - 2*padding) + padding
           , height : scrollbarheight
         })
-        
+        $scroller.parent().scrollLeft(0)
         return scrollbarheight;
       }
       
@@ -134,12 +134,6 @@ exports.mockScroller = function($elem, height, padding){
      mouseover: scroller.mouseover
    , mouseout: scroller.mouseout
    , mousedown: scroller.scrollbarMousedown
-   //, mouseup: scroller.scrollbarMouseup
-  })
-  
-  $scroller.find('*').live('select',function(e){
-    e.preventDefault()
-    return false;
   })
   
   return scroller;  
