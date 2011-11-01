@@ -96,10 +96,17 @@ exports.mockScroller = function($elem, height, padding){
       
       , scrollbarMousedown: function(e){
         scroller.dragBar = e.clientY
+        
+        $(body).bind({
+            'mouseup.yj-scroller': scroller.scrollbarMouseup
+          , 'mousemove.yj-scroller': scroller.barScroll  
+        })
+        
       }
       
       , scrollbarMouseup: function(){
         delete scroller.dragBar;
+        $(body).unbind('.yj-scroller')
       }
       
       , barScroll : function(e){
@@ -130,11 +137,6 @@ exports.mockScroller = function($elem, height, padding){
   $scroller.find('*').live('select',function(e){
     e.preventDefault()
     return false;
-  })
-  
-  $(document).bind({
-      'mouseup.yj-scroller': scroller.scrollbarMouseup
-    , 'mousemove.yj-scroller': scroller.barScroll  
   })
   
   return scroller;  
