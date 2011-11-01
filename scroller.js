@@ -1,6 +1,5 @@
 exports = (function(){return this;})();
 
-
 (function($, _, undefined){
 /*  
   
@@ -13,7 +12,9 @@ exports = (function(){return this;})();
 
 */
 
-exports.mockScroller = function($elem, height){
+exports.mockScroller = function($elem, height, padding){
+  
+  padding = padding || 5
   
   $elem = $($elem)
     .wrap('<div class="yj-scroller-viewport" />')
@@ -22,7 +23,7 @@ exports.mockScroller = function($elem, height){
   
   var $viewport = $elem.parent().parent()
     , $scroller = $viewport.find('.yj-scroller').css('height', height)
-    , $scrollbar = $("<div class='yj-mockscroll' />").appendTo($viewport)
+    , $scrollbar = $("<div class='yj-mockscroll'><div class='yj-mockscroll-bar' /></div>").appendTo($viewport)
     , docScrollTop = -1
     , doc = document.documentElement
     , body = document.body
@@ -55,13 +56,26 @@ exports.mockScroller = function($elem, height){
         var hiddenHeight = Math.max($elem.height() - $viewport.height(), 1)
           , scrollbarheight = Math.max((1/(hiddenHeight+100) * 100) * $viewport.height(), 10);
           
-        $scrollbar.animate({
-            top : ($scroller.scrollTop() / hiddenHeight) * ($viewport.height() - scrollbarheight - 10) + 5
+        $scrollbar.css({
+            top : ($scroller.scrollTop() / hiddenHeight) * ($viewport.height() - scrollbarheight - 2*padding) + padding
           , height : scrollbarheight
-        }, 20)
+        })
         
         return scrollbarheight;
       }
+      
+      // inverse of calculate
+      , uncalculate: function(ydiff){
+        
+         var hiddenHeight = Math.max($elem.height() - $viewport.height(), 1)
+            , scrollbarheight = Math.max((1/(hiddenHeight+100) * 100) * $viewport.height(), 10)
+            , bartop = $scrollbar.position().top + ydiff
+            , top =  hiddenHeight * ((bartop-padding)/($viewport.height() - scrollbarheight - 2*padding))
+        
+        $scroller.scrollTop(top)        
+        scroller.calculate() // Move bar
+      }
+      
       , mouseover: function(){
           if (scroller.timeout) 
             clearTimeout(scroller.timeout);
@@ -70,12 +84,33 @@ exports.mockScroller = function($elem, height){
           disableWindowScroll()
         }
       , mouseout: function(){
+          if (scroller.dragBar)
+            return;
+            
           scroller.timeout = setTimeout(scroller.hide, 100)
           enableWindowScroll();
         }
         
       , top: $.proxy($scroller.scrollTop, $scroller)
       , scrollToTop : _.bind($scroller.animate, $scroller, {scrollTop: 0}, 'fast')
+      
+      , scrollbarMousedown: function(e){
+        scroller.dragBar = e.clientY
+      }
+      
+      , scrollbarMouseup: function(){
+        delete scroller.dragBar;
+      }
+      
+      , barScroll : function(e){
+        if (scroller.dragBar == null)
+          return;
+        
+        scroller.uncalculate(e.clientY - scroller.dragBar)  
+        scroller.dragBar = e.clientY
+      }
+      
+      
     }
   
   $elem.bind({
@@ -85,13 +120,24 @@ exports.mockScroller = function($elem, height){
    , domchange : scroller.calculate
   })
   
+  $scrollbar.bind({
+     mouseover: scroller.mouseover
+   , mouseout: scroller.mouseout
+   , mousedown: scroller.scrollbarMousedown
+   //, mouseup: scroller.scrollbarMouseup
+  })
+  
   $scroller.find('*').live('select',function(e){
     e.preventDefault()
     return false;
+  })
+  
+  $(document).bind({
+      'mouseup.yj-scroller': scroller.scrollbarMouseup
+    , 'mousemove.yj-scroller': scroller.barScroll  
   })
   
   return scroller;  
 }
 
 })($, _)
-
