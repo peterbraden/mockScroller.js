@@ -120,6 +120,20 @@ exports.mockScroller = function($elem, height, padding){
         scroller.dragBar = e.clientY
       }
       
+      /**
+      * User's can drag-scroll across the hidden element.
+      * Sadly, we don't get a scroll event for this, so this uber-hacky
+      * method adds a global mouse handler to cancel any horizontal 
+      * scroll when a mousedown in the $elem occurs
+      */
+      , preventSideScroll: function(){
+        $(body).bind({
+            'mouseup.yj-scroller': function(){$(body).unbind('.yj-scroller')}
+          , 'mousemove.yj-scroller': function(){$scroller.parent().scrollLeft(0)}
+          , 'selectstart.yj-scroller': function(e){e.preventDefault()} 
+        })
+                
+      }
       
     }
   
@@ -128,6 +142,7 @@ exports.mockScroller = function($elem, height, padding){
    , mouseover: scroller.mouseover
    , mouseout: scroller.mouseout
    , domchange : scroller.calculate
+   , mousedown : scroller.preventSideScroll
   })
   
   $scrollbar.bind({
