@@ -99,14 +99,17 @@ exports.mockScroller = function($elem, height, padding){
         
         $(body).bind({
             'mouseup.yj-scroller': scroller.scrollbarMouseup
-          , 'mousemove.yj-scroller': scroller.barScroll  
+          , 'mousemove.yj-scroller': scroller.barScroll 
+          , 'selectstart.yj-scroller': function(e){e.preventDefault()} 
         })
         
       }
       
-      , scrollbarMouseup: function(){
+      , scrollbarMouseup: function(e){
         delete scroller.dragBar;
         $(body).unbind('.yj-scroller')
+        if (!$viewport.find(e.target).length)
+          scroller.mouseout()
       }
       
       , barScroll : function(e){
