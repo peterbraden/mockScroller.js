@@ -32,16 +32,18 @@ exports.mockScroller = function($elem, height, padding){
     , doc = document.documentElement
     , body = document.body
     , marginRight = null
+    , dwidth = function(){
+      return $.browser.msie ? $(body).width() : $(doc).width()
+    }
     
     // Lock the window's scroll
     , disableWindowScroll = function(){
-        var initialWidth = $(doc).width()
+        var initialWidth = dwidth()
         marginRight = body.style.marginRight
         docScrollTop = doc.scrollTop;
         doc.style.overflow = 'hidden';
         body.scroll = "no";
-        body.style.marginRight = ($(doc).width() - initialWidth) + 'px';  
-                
+        body.style.marginRight = (dwidth() - initialWidth) + 'px';  
         // Setting it to 'hidden' resets scrollTop in FF/IE
         doc.scrollTop = docScrollTop;
       }
