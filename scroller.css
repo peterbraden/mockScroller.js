@@ -1,10 +1,9 @@
+body{margin-right:auto;} /* You probably want this to avoid wobbles. */
+
 .yj-scroller-viewport { /* The dimension container */
   width:248px;
   overflow:hidden;
 	position:relative;
-
-
-
 }
 
 .yj-scroller-viewport, .yj-scroller-viewport *{
