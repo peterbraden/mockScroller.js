@@ -107,7 +107,8 @@ exports.mockScroller = function($elem, height, padding){
       , scrollbarMouseup: function(e){
         delete scroller.dragBar;
         $(body).unbind('.yj-scroller')
-        if (!$viewport.find(e.target).length)
+        //if (!$viewport.find(e.target).length)
+        if (!$(e.target).parents().is('.yj-scroller-viewport'))
           scroller.mouseout()
       }
       
