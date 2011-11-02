@@ -1,6 +1,6 @@
 exports = (function(){return this;})();
 
-(function($, _, undefined){
+(function($, undefined){
 /*  
   
   Make a fake scrollbar. 
@@ -19,7 +19,11 @@ exports.mockScroller = function($elem, height, padding){
   $elem = $($elem)
     .wrap('<div class="yj-scroller-viewport" />')
     .wrap('<div class="yj-scroller" />')
-    
+  
+  var bind = function(func, ctx){ // _.bind
+    var args = Array.prototype.slice(2)
+    return function(){func.apply(ctx, args)}
+  }  
   
   var $viewport = $elem.parent().parent()
     , $scroller = $viewport.find('.yj-scroller').css('height', height)
@@ -27,27 +31,28 @@ exports.mockScroller = function($elem, height, padding){
     , docScrollTop = -1
     , doc = document.documentElement
     , body = document.body
-    , marginRight
+    , marginRight = null
     
     // Lock the window's scroll
     , disableWindowScroll = function(){
         var initialWidth = $(doc).width()
         marginRight = body.style.marginRight
-
         docScrollTop = doc.scrollTop;
         doc.style.overflow = 'hidden';
         body.scroll = "no";
-        body.style.marginRight = ($(doc).width() - initialWidth) + 'px';          
+        body.style.marginRight = ($(doc).width() - initialWidth) + 'px';  
+                
         // Setting it to 'hidden' resets scrollTop in FF/IE
         doc.scrollTop = docScrollTop;
       }
       
      // unlock window scroll  
-     , enableWindowScroll = function(){
+     , enableWindowScroll = function(){       
         doc.style.overflow = 'auto';
         body.scroll = "";
         body.style.marginRight = marginRight || 'auto';
         doc.scrollTop = docScrollTop;
+        docScrollTop = -1
       }
     
     /*
@@ -55,8 +60,8 @@ exports.mockScroller = function($elem, height, padding){
     */  
     , scroller = {
       
-        hide: _.bind($scrollbar.fadeOut, $scrollbar, 'slow')
-      , show: _.bind($scrollbar.fadeIn, $scrollbar, 20)
+        hide: bind($scrollbar.fadeOut, $scrollbar, 'slow')
+      , show: bind($scrollbar.fadeIn, $scrollbar, 20)
       
       , timeout : null // Used to hide the bar on mouseout
 
@@ -94,23 +99,23 @@ exports.mockScroller = function($elem, height, padding){
         scroller.calculate() // Move bar
       }
       
-      , mouseover: function(){
+      , mouseover: function(e){
           if (scroller.timeout) 
             clearTimeout(scroller.timeout);
           scroller.calculate()
-          scroller.show()          
-          disableWindowScroll()
+          scroller.show()   
+          if (docScrollTop == -1)
+            disableWindowScroll()
         }
-      , mouseout: function(){
-          if (scroller.dragBar)
-            return;
-            
-          scroller.timeout = setTimeout(scroller.hide, 100)
-          enableWindowScroll();
+      , mouseout: function(e){
+          if (!scroller.dragBar && !$(e.relatedTarget || e.target).parents().is('.yj-scroller-viewport')){            
+            scroller.timeout = setTimeout(scroller.hide, 100)
+            enableWindowScroll();
+          }  
         }
         
       , top: $.proxy($scroller.scrollTop, $scroller)
-      , scrollToTop : _.bind($scroller.animate, $scroller, {scrollTop: 0}, 'fast')
+      , scrollToTop : bind($scroller.animate, $scroller, {scrollTop: 0}, 'fast')
       
       , scrollbarMousedown: function(e){
         scroller.dragBar = e.clientY
@@ -132,9 +137,7 @@ exports.mockScroller = function($elem, height, padding){
       , scrollbarMouseup: function(e){
         delete scroller.dragBar;
         $(body).unbind('.yj-scroller')
-        //if (!$viewport.find(e.target).length)
-        if (!$(e.target).parents().is('.yj-scroller-viewport'))
-          scroller.mouseout()
+        scroller.mouseout(e)
       }
       
       /*
@@ -166,9 +169,8 @@ exports.mockScroller = function($elem, height, padding){
   
   /*
   * Bind the inner element with scroll events.
-  * TODO - delegate these to the viewport
   */
-  $elem.bind({
+  $viewport.bind({
      scroll: scroller.calculate
    , mouseover: scroller.mouseover
    , mouseout: scroller.mouseout
@@ -183,12 +185,10 @@ exports.mockScroller = function($elem, height, padding){
   * be draggable on touch devices
   */
   $scrollbar.bind({
-     mouseover: scroller.mouseover
-   , mouseout: scroller.mouseout
-   , mousedown: scroller.scrollbarMousedown
+   mousedown: scroller.scrollbarMousedown
   })
   
   return scroller;  
 }
 
-})($, _)
+})($)
