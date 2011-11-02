@@ -118,7 +118,7 @@ exports.mockScroller = function($elem, height, padding){
       , scrollToTop : bind($scroller.animate, $scroller, {scrollTop: 0}, 'fast')
       
       , scrollbarMousedown: function(e){
-        scroller.dragBar = e.clientY
+        scroller.dragBar = e.pageY
         
         $(body).bind({
             'mouseup.yj-scroller': scroller.scrollbarMouseup
@@ -147,7 +147,7 @@ exports.mockScroller = function($elem, height, padding){
         if (scroller.dragBar == null)
           return;
         
-        scroller.uncalculate(e.clientY - $viewport.offset().top)  
+        scroller.uncalculate(e.pageY - $viewport.offset().top)  
       }
       
       /**
