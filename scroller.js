@@ -21,7 +21,7 @@ exports.mockScroller = function($elem, height, padding){
     .wrap('<div class="yj-scroller" />')
   
   var bind = function(func, ctx){ // _.bind
-    var args = Array.prototype.slice(2)
+    var args = Array.prototype.slice.call(arguments, 2)
     return function(){func.apply(ctx, args)}
   }  
   
