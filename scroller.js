@@ -23,45 +23,22 @@ exports.mockScroller = function($elem, height, padding){
   var $viewport = $elem.parent().parent()
     , $scroller = $viewport.find('.yj-scroller').css('height', height)
     , $scrollbar = $("<div class='yj-mockscroll'><div class='yj-mockscroll-bar' /></div>").appendTo($viewport)
-    , docScrollTop = -1
-    , doc = document.documentElement
-    , body = document.body
-    , marginRight = null
     , slowMode = $.browser.msie
     
-    
-    , dwidth = function(){
-      return $.browser.msie ? $(body).width() : $(doc).width()
-    }
-    
-    // Lock the window's scroll
-    , disableWindowScroll = function(){
-        var initialWidth = dwidth()
-        marginRight = body.style.marginRight
-        docScrollTop = doc.scrollTop;
-        doc.style.overflow = 'hidden';
-        body.scroll = "no";
-        body.style.marginRight = (dwidth() - initialWidth) + 'px';  
-        // Setting it to 'hidden' resets scrollTop in FF/IE
-        doc.scrollTop = docScrollTop;
-      }
-      
-     // unlock window scroll  
-     , enableWindowScroll = function(){       
-        doc.style.overflow = 'auto';
-        body.scroll = "";
-        body.style.marginRight = marginRight || 'auto';
-        doc.scrollTop = docScrollTop;
-        docScrollTop = -1
-      }
     
     /*
     * Stick methods onto an object so we can control scroller programatically
     */  
     , scroller = {
       
-        hide: function(){$scrollbar.stop(true, true).fadeOut('slow')}
-      , show: function(){$scrollbar.stop(true, true).fadeIn(20)}
+        hide: function(){
+          $scrollbar.stop(true, true).fadeOut('slow')
+          delete scroller.visible;  
+        }
+      , show: function(){
+        $scrollbar.stop(true, true).fadeIn(20)
+        scroller.visible = true;
+        }
       
       , timeout : null // Used to hide the bar on mouseout
 
@@ -75,6 +52,23 @@ exports.mockScroller = function($elem, height, padding){
           setTimeout(function(){delete scroller.scrolling}, 500)
         }
       }
+      , wheel : function(e){
+        if (!scroller.visible) return;
+        var e = e || window.event;
+        
+        //courtesy https://github.com/brandonaaron/jquery-mousewheel/blob/master/jquery.mousewheel.js
+        var delta = 0;
+        if (e.wheelDelta) { delta = -e.wheelDelta/120; }
+        if (e.detail) { delta = e.detail / 3; }
+
+        $scroller.scrollTop($scroller.scrollTop() + delta * 40);
+        scroller.scroll()
+        
+        if (e.preventDefault) {e.preventDefault();}
+        e.returnValue = false;
+        return false;
+      }
+      
       /*
       * Based on the position of the $elem within the viewport,
       * position a scrollbar down the side, and size it proportionally
@@ -114,13 +108,10 @@ exports.mockScroller = function($elem, height, padding){
             clearTimeout(scroller.timeout);
           scroller.calculate()
           scroller.show()   
-          if (docScrollTop == -1)
-            disableWindowScroll()
         }
       , mouseout: function(e){
           if (!scroller.dragBar && !$(e.relatedTarget || e.target).parents().is('.yj-scroller-viewport')){            
             scroller.timeout = setTimeout(scroller.hide, 100)
-            enableWindowScroll();
           }  
         }
         
@@ -130,7 +121,7 @@ exports.mockScroller = function($elem, height, padding){
       , scrollbarMousedown: function(e){
         scroller.dragBar = e.pageY
         
-        $(body).bind({
+        $(document.body).bind({
             'mouseleave.yj-scroller': scroller.scrollbarMouseup // mouseleave is useful here, and jquery simulates IE
           , 'mouseup.yj-scroller': scroller.scrollbarMouseup
           , 'mousemove.yj-scroller': scroller.barScroll 
@@ -147,7 +138,7 @@ exports.mockScroller = function($elem, height, padding){
       */
       , scrollbarMouseup: function(e){
         delete scroller.dragBar;
-        $(body).unbind('.yj-scroller')
+        $(document.body).unbind('.yj-scroller')
         scroller.mouseout(e)
       }
       
@@ -168,8 +159,8 @@ exports.mockScroller = function($elem, height, padding){
       * scroll when a mousedown in the $elem occurs
       */
       , preventSideScroll: function(){
-        $(body).bind({
-            'mouseup.yj-scroller': function(){$(body).unbind('.yj-scroller')}
+        $(document.body).bind({
+            'mouseup.yj-scroller': function(){$(document.body).unbind('.yj-scroller')}
           , 'mousemove.yj-scroller': function(){$scroller.parent().scrollLeft(0)}
           , 'selectstart.yj-scroller': function(e){e.preventDefault()} 
         })
@@ -189,13 +180,18 @@ exports.mockScroller = function($elem, height, padding){
    , touchmove : scroller.calculate // iOs
   })
   
-  $scroller.scroll(scroller.scroll)
-  
   /*
   * Bind events onto the scrollbar
   * mice can drag it, but it shouldn't 
   * be draggable on touch devices
   */
+  if (window.addEventListener){
+    $scroller[0].addEventListener('DOMMouseScroll', scroller.wheel, false);
+  	$scroller[0].addEventListener('mousewheel', scroller.wheel, false );
+  } else {
+    document.attachEvent("onmousewheel", scroller.wheel)
+  }
+  
   $scrollbar.bind({
    mousedown: scroller.scrollbarMousedown
   })
