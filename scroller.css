@@ -12,7 +12,7 @@ body{margin-right:auto;} /* You probably want this to avoid wobbles. */
 	-moz-user-select: none;
 	-o-user-select: none;
 	user-select: none;
-	
+	zoom:1;
 }
 
 .yj-scroller { /* Wide inner container to hide scrollbar */
@@ -20,6 +20,7 @@ body{margin-right:auto;} /* You probably want this to avoid wobbles. */
   overflow-x:hidden;
   overflow-y:scroll;
 	-webkit-overflow-scrolling: touch;
+	zoom:1;
 }
 
 

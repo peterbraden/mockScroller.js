@@ -1,5 +1,4 @@
 exports = (function(){return this;})();
-
 (function($, undefined){
 /*  
   
@@ -67,6 +66,14 @@ exports.mockScroller = function($elem, height, padding){
       
       , timeout : null // Used to hide the bar on mouseout
 
+      , scroll : function(e){
+        if ($.browser.msie && scroller.scrolling) return;
+        setTimeout(function(){scroller.calculate(e)},0);
+        if ($.browser.msie){ // IE is slow
+          scroller.scrolling = true; 
+          setTimeout(function(){delete scroller.scrolling}, 100)
+        }
+      }
       /*
       * Based on the position of the $elem within the viewport,
       * position a scrollbar down the side, and size it proportionally
@@ -173,7 +180,7 @@ exports.mockScroller = function($elem, height, padding){
   * Bind the inner element with scroll events.
   */
   $viewport.bind({
-     scroll: scroller.calculate
+     scroll: scroller.scroll
    , mouseover: scroller.mouseover
    , mouseout: scroller.mouseout
    , domchange : scroller.calculate
