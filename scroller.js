@@ -131,7 +131,8 @@ exports.mockScroller = function($elem, height, padding){
         scroller.dragBar = e.pageY
         
         $(body).bind({
-            'mouseup.yj-scroller': scroller.scrollbarMouseup
+            'mouseleave.yj-scroller': scroller.scrollbarMouseup // mouseleave is useful here, and jquery simulates IE
+          , 'mouseup.yj-scroller': scroller.scrollbarMouseup
           , 'mousemove.yj-scroller': scroller.barScroll 
           , 'selectstart.yj-scroller': function(e){e.preventDefault()} 
         })
