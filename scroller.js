@@ -31,6 +31,9 @@ exports.mockScroller = function($elem, height, padding){
     , doc = document.documentElement
     , body = document.body
     , marginRight = null
+    , slowMode = $.browser.msie
+    
+    
     , dwidth = function(){
       return $.browser.msie ? $(body).width() : $(doc).width()
     }
@@ -67,11 +70,13 @@ exports.mockScroller = function($elem, height, padding){
       , timeout : null // Used to hide the bar on mouseout
 
       , scroll : function(e){
-        if ($.browser.msie && scroller.scrolling) return;
+        if (slowMode && scroller.scrolling) return;
+
         setTimeout(function(){scroller.calculate(e)},0);
-        if ($.browser.msie){ // IE is slow
+        
+        if (slowMode){
           scroller.scrolling = true; 
-          setTimeout(function(){delete scroller.scrolling}, 100)
+          setTimeout(function(){delete scroller.scrolling}, 500)
         }
       }
       /*
@@ -177,16 +182,17 @@ exports.mockScroller = function($elem, height, padding){
     }
   
   /*
-  * Bind the inner element with scroll events.
+  * Bind the viewport with mouse events.
   */
   $viewport.bind({
-     scroll: scroller.scroll
-   , mouseover: scroller.mouseover
+    mouseover: scroller.mouseover
    , mouseout: scroller.mouseout
    , domchange : scroller.calculate
    , mousedown : scroller.preventSideScroll
    , touchmove : scroller.calculate // iOs
   })
+  
+  $scroller.scroll(scroller.scroll)
   
   /*
   * Bind events onto the scrollbar
