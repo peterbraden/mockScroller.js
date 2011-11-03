@@ -1,15 +1,16 @@
-exports = (function(){return this;})();
-(function($, undefined){
+exports = window;
+
 /*  
   
   Make a fake scrollbar. 
 
   Pass in the element you wish to scroll, and the height of
   the viewport, and it will setup a mock scroller, similar
-  to facebooks
+  to facebook's ticker scroller, or the new OSX leopard scroller.
 
 
 */
+(function($, undefined){
 
 exports.mockScroller = function($elem, height, padding){
   
@@ -18,12 +19,7 @@ exports.mockScroller = function($elem, height, padding){
   $elem = $($elem)
     .wrap('<div class="yj-scroller-viewport" />')
     .wrap('<div class="yj-scroller" />')
-  
-  var bind = function(func, ctx){ // _.bind
-    var args = Array.prototype.slice.call(arguments, 2)
-    return function(){func.apply(ctx, args)}
-  }  
-  
+
   var $viewport = $elem.parent().parent()
     , $scroller = $viewport.find('.yj-scroller').css('height', height)
     , $scrollbar = $("<div class='yj-mockscroll'><div class='yj-mockscroll-bar' /></div>").appendTo($viewport)
@@ -64,8 +60,8 @@ exports.mockScroller = function($elem, height, padding){
     */  
     , scroller = {
       
-        hide: bind($scrollbar.fadeOut, $scrollbar, 'slow')
-      , show: bind($scrollbar.fadeIn, $scrollbar, 20)
+        hide: function(){$scrollbar.stop(true, true).fadeOut('slow')}
+      , show: function(){$scrollbar.stop(true, true).fadeIn(20)}
       
       , timeout : null // Used to hide the bar on mouseout
 
@@ -129,7 +125,7 @@ exports.mockScroller = function($elem, height, padding){
         }
         
       , top: $.proxy($scroller.scrollTop, $scroller)
-      , scrollToTop : bind($scroller.animate, $scroller, {scrollTop: 0}, 'fast')
+      , scrollToTop : function(){ $scroller.animate({scrollTop: 0}, 'fast')}
       
       , scrollbarMousedown: function(e){
         scroller.dragBar = e.pageY
