@@ -45,7 +45,7 @@ exports.mockScroller = function($elem, height, padding){
       , scroll : function(e){
         if (slowMode && scroller.scrolling) return;
 
-        setTimeout(function(){scroller.calculate(e)},0);
+        scroller.calculate(e);
         
         if (slowMode){
           scroller.scrolling = true; 
@@ -61,8 +61,10 @@ exports.mockScroller = function($elem, height, padding){
         if (e.wheelDelta) { delta = -e.wheelDelta/120; }
         if (e.detail) { delta = e.detail / 3; }
 
-        $scroller.scrollTop($scroller.scrollTop() + delta * 40);
-        scroller.scroll()
+        setTimeout(function(){
+          $scroller.scrollTop($scroller.scrollTop() + delta * 40))
+          scroller.scroll()
+        },0);
         
         if (e.preventDefault) {e.preventDefault();}
         e.returnValue = false;
