@@ -23,7 +23,8 @@ exports.mockScroller = function($elem, height, padding){
     , $scroller = $viewport.find('.yj-scroller').css('height', height)
     , $scrollbar = $("<div class='yj-mockscroll'><div class='yj-mockscroll-bar' /></div>").appendTo($viewport)
     , slowMode = $.browser.msie
-    
+    , disabled = false
+
     /*
     * Stick methods onto an object so we can control scroller programatically
     */  
@@ -34,13 +35,11 @@ exports.mockScroller = function($elem, height, padding){
           delete scroller.visible;  
         }
       , show: function(){
-        if (scroller.disabled) return;
+        if (disabled) return;
         $scrollbar.stop(true, true).fadeIn(20)
         scroller.visible = true;
         }
       
-      , disabled: false
-
       , disable: function(){
         scroller.hide();
         disabled = true;
@@ -53,7 +52,7 @@ exports.mockScroller = function($elem, height, padding){
       , timeout : null // Used to hide the bar on mouseout
 
       , scroll : function(e){
-        if (scroller.disabled) return;
+        if (disabled) return;
         if (slowMode && scroller.scrolling) return;
 
         scroller.calculate(e);
@@ -68,7 +67,7 @@ exports.mockScroller = function($elem, height, padding){
         }
       }
       , wheel : function(e){
-        if (!scroller.visible || scroller.disabled) return;
+        if (!scroller.visible || disabled) return;
         var e = e || window.event;
         
         //courtesy https://github.com/brandonaaron/jquery-mousewheel/blob/master/jquery.mousewheel.js
@@ -121,7 +120,7 @@ exports.mockScroller = function($elem, height, padding){
       }
       
       , mouseover: function(e){
-          if (scroller.disabled) return;
+          if (disabled) return;
           if (scroller.timeout) 
             clearTimeout(scroller.timeout);
           scroller.calculate()
