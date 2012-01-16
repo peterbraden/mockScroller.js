@@ -9,7 +9,10 @@
 
 		<script>
 $(function(){	
-	mockScroller($("#test"), 100)	
+	var s = mockScroller($("#test"), 100)	
+	
+	s.onScroll(function(){console.log(arguments)})
+	
 })
 		</script>
 

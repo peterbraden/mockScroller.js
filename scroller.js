@@ -1,5 +1,4 @@
 exports = window;
-
 /*  
   
   Make a fake scrollbar. 
@@ -25,7 +24,6 @@ exports.mockScroller = function($elem, height, padding){
     , $scrollbar = $("<div class='yj-mockscroll'><div class='yj-mockscroll-bar' /></div>").appendTo($viewport)
     , slowMode = $.browser.msie
     
-    
     /*
     * Stick methods onto an object so we can control scroller programatically
     */  
@@ -36,16 +34,33 @@ exports.mockScroller = function($elem, height, padding){
           delete scroller.visible;  
         }
       , show: function(){
+        if (scroller.disabled) return;
         $scrollbar.stop(true, true).fadeIn(20)
         scroller.visible = true;
         }
       
+      , disabled: false
+
+      , disable: function(){
+        scroller.hide();
+        disabled = true;
+      }
+      , enable: function(){
+        disabled = false;
+      }
+
+      , scrollCallbacks : []
       , timeout : null // Used to hide the bar on mouseout
 
       , scroll : function(e){
+        if (scroller.disabled) return;
         if (slowMode && scroller.scrolling) return;
 
         scroller.calculate(e);
+        
+        for (var i = 0; i< scroller.scrollCallbacks.length; i++){
+          scroller.scrollCallbacks[i](e);
+        }
         
         if (slowMode){
           scroller.scrolling = true; 
@@ -53,7 +68,7 @@ exports.mockScroller = function($elem, height, padding){
         }
       }
       , wheel : function(e){
-        if (!scroller.visible) return;
+        if (!scroller.visible || scroller.disabled) return;
         var e = e || window.event;
         
         //courtesy https://github.com/brandonaaron/jquery-mousewheel/blob/master/jquery.mousewheel.js
@@ -62,7 +77,7 @@ exports.mockScroller = function($elem, height, padding){
         if (e.detail) { delta = e.detail / 3; }
 
         setTimeout(function(){
-          $scroller.scrollTop($scroller.scrollTop() + delta * 40))
+          $scroller.scrollTop($scroller.scrollTop() + delta * 40)
           scroller.scroll()
         },0);
         
@@ -106,6 +121,7 @@ exports.mockScroller = function($elem, height, padding){
       }
       
       , mouseover: function(e){
+          if (scroller.disabled) return;
           if (scroller.timeout) 
             clearTimeout(scroller.timeout);
           scroller.calculate()
@@ -119,6 +135,12 @@ exports.mockScroller = function($elem, height, padding){
         
       , top: $.proxy($scroller.scrollTop, $scroller)
       , scrollToTop : function(){ $scroller.animate({scrollTop: 0}, 'fast')}
+      
+      // Scroll callbacks should be called infrequently for IE. let us handle that.
+      , onScroll : function(func){
+        scroller.scrollCallbacks.push(func);
+      }
+      
       
       , scrollbarMousedown: function(e){
         scroller.dragBar = e.pageY
