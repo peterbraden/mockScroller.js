@@ -36,18 +36,20 @@ exports.mockScroller = function($elem, height, padding){
         }
       , show: function(){
         if (disabled) return;
-        $scrollbar.stop(true, true).fadeIn(20)
-        scroller.visible = true;
+        if ($elem.height() > $scroller.height()){
+          $scrollbar.stop(true, true).fadeIn(20)
+          scroller.visible = true;
+          }
         }
-      
+
       , disable: function(){
         scroller.hide();
         disabled = true;
       }
       , enable: function(){
         disabled = false;
-      }
-
+      }  
+     
       , scrollCallbacks : []
       , timeout : null // Used to hide the bar on mouseout
 
@@ -189,7 +191,11 @@ exports.mockScroller = function($elem, height, padding){
         })
                 
       }
-      
+
+      , updateHeight: function (height) {
+        $scroller.height(height);
+      }
+
     }
   
   /*
@@ -210,7 +216,7 @@ exports.mockScroller = function($elem, height, padding){
   */
   if (window.addEventListener){
     $scroller[0].addEventListener('DOMMouseScroll', scroller.wheel, false);
-  	$scroller[0].addEventListener('mousewheel', scroller.wheel, false );
+    $scroller[0].addEventListener('mousewheel', scroller.wheel, false );
   } else {
     document.attachEvent("onmousewheel", scroller.wheel)
   }
