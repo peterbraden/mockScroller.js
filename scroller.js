@@ -70,6 +70,7 @@ exports.mockScroller = function($elem, height, padding){
       }
       , wheel : function(e){
         if (!scroller.visible || disabled) return;
+        if (slowmode && scroller.out) return;
         var e = e || window.event;
         
         //courtesy https://github.com/brandonaaron/jquery-mousewheel/blob/master/jquery.mousewheel.js
@@ -122,6 +123,7 @@ exports.mockScroller = function($elem, height, padding){
       }
       
       , mouseover: function(e){
+          scroller.out = false;
           if (disabled) return;
           if (scroller.timeout) 
             clearTimeout(scroller.timeout);
@@ -129,6 +131,7 @@ exports.mockScroller = function($elem, height, padding){
           scroller.show()   
         }
       , mouseout: function(e){
+          scroller.out = true;
           if (!scroller.dragBar && !$(e.relatedTarget || e.target).parents().is('.yj-scroller-viewport')){            
             scroller.timeout = setTimeout(scroller.hide, 100)
           }  
