@@ -84,6 +84,7 @@ exports.mockScroller = function($elem, height, padding){
         },0);
         
         if (e.preventDefault) {e.preventDefault();}
+        if (event.preventDefault) {event.preventDefault();}
         e.returnValue = false;
         return false;
       }
