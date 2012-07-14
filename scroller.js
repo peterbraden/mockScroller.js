@@ -70,7 +70,7 @@ exports.mockScroller = function($elem, height, padding){
       }
       , wheel : function(e){
         if (!scroller.visible || disabled) return;
-        if (slowmode && scroller.out) return;
+        if (slowMode && scroller.out) return;
         var e = e || window.event;
         
         //courtesy https://github.com/brandonaaron/jquery-mousewheel/blob/master/jquery.mousewheel.js
