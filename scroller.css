@@ -15,6 +15,10 @@ body{margin-right:auto;} /* You probably want this to avoid wobbles. */
 	zoom:1;
 }
 
+.yj-scroller-content{
+  overflow-x:hidden;
+}
+
 
 .yj-mockscroll {
 	display:none;

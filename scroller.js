@@ -124,7 +124,7 @@ exports.mockScroller = function($elem, height, padding){
         $scroller.scrollTop(top)        
         scroller.calculate() // Move bar
       }
-      
+       
       , mouseover: function(e){
           scroller.out = false;
           if (disabled) return;
@@ -140,6 +140,13 @@ exports.mockScroller = function($elem, height, padding){
           }  
         }
         
+      , mousedown: function(e){
+        $(document.body).bind('mouseup.yj-scroller', function(){
+          $viewport.scrollLeft(0);
+          $(document.body).unbind('.yj-scroller')
+        })
+      }
+
       , top: $.proxy($scroller.scrollTop, $scroller)
       , scrollToTop : function(){ $scroller.animate({scrollTop: 0}, 'fast')}
       
@@ -193,8 +200,9 @@ exports.mockScroller = function($elem, height, padding){
   * Bind the viewport with mouse events.
   */
   $viewport.bind({
-    mouseover: scroller.mouseover
+     mouseover: scroller.mouseover
    , mouseout: scroller.mouseout
+   , mousedown: scroller.mousedown
    , domchange : scroller.calculate
    , touchmove : scroller.calculate // iOs
   })
