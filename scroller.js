@@ -18,10 +18,12 @@ exports.mockScroller = function($elem, height, padding){
   $elem = $($elem)
     .wrap('<div class="yj-scroller-viewport" />')
     .wrap('<div class="yj-scroller" />')
+    .wrap('<div class="yj-scroller-content" />')
 
-  var $viewport = $elem.parent().parent()
+  var $viewport = $elem.parent().parent().parent()
     , $scroller = $viewport.find('.yj-scroller').css('height', height)
     , $scrollbar = $("<div class='yj-mockscroll'><div class='yj-mockscroll-bar' /></div>").appendTo($viewport)
+    , $scontent = $viewport.find('.yj-scroller-content').width($viewport.width())
     , slowMode = $.browser.msie
     , disabled = false
 
@@ -180,21 +182,6 @@ exports.mockScroller = function($elem, height, padding){
         
         scroller.uncalculate(e.pageY - $viewport.offset().top)  
       }
-      
-      /**
-      * Users can drag-scroll across the hidden element.
-      * Sadly, we don't get a scroll event for this, so this uber-hacky
-      * method adds a global mouse handler to cancel any horizontal 
-      * scroll when a mousedown in the $elem occurs
-      */
-      , preventSideScroll: function(){
-        $(document.body).bind({
-            'mouseup.yj-scroller': function(){$(document.body).unbind('.yj-scroller')}
-          , 'mousemove.yj-scroller': function(){$scroller.parent().scrollLeft(0)}
-          , 'selectstart.yj-scroller': function(e){e.preventDefault()} 
-        })
-                
-      }
 
       , updateHeight: function (height) {
         $scroller.height(height);
@@ -209,7 +196,6 @@ exports.mockScroller = function($elem, height, padding){
     mouseover: scroller.mouseover
    , mouseout: scroller.mouseout
    , domchange : scroller.calculate
-   , mousedown : scroller.preventSideScroll
    , touchmove : scroller.calculate // iOs
   })
   
