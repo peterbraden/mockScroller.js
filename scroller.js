@@ -11,7 +11,7 @@ exports = window;
 */
 (function($, undefined){
 
-exports.mockScroller = function($elem, height, padding){
+exports.mockScroller = function($elem, height, padding, width){
   
   padding = padding || 5
   
@@ -20,10 +20,10 @@ exports.mockScroller = function($elem, height, padding){
     .wrap('<div class="yj-scroller" />')
     .wrap('<div class="yj-scroller-content" />')
 
-  var $viewport = $elem.parent().parent().parent()
+  var $viewport = $elem.closest('.yj-scroller-viewport')
     , $scroller = $viewport.find('.yj-scroller').css('height', height)
     , $scrollbar = $("<div class='yj-mockscroll'><div class='yj-mockscroll-bar' /></div>").appendTo($viewport)
-    , $scontent = $viewport.find('.yj-scroller-content').width($viewport.width())
+    , $scontent = $viewport.find('.yj-scroller-content').width(width || $viewport.width())
     , slowMode = $.browser.msie
     , disabled = false
 
